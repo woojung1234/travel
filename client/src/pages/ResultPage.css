@@ -1,0 +1,16 @@
+/* src/pages/ResultPage.css */
+.result-page {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .left-pane,
+  .right-pane {
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .left-pane {
+    border-right: 1px solid #ccc;
+  }
+  
