@@ -76,6 +76,7 @@
   overflow: hidden;
   background: #475569; /* 막대 배경 */
   margin: 10px 0;
+  position: relative;
 }
 
 .positive-bar {
@@ -96,6 +97,18 @@
   margin-top: 10px;
   font-size: 0.95em;
   color: #94a3b8;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9em;
+  pointer-events: none;
+  z-index: 100;
+  white-space: nowrap;
 }
 
 /* 분석 결과 섹션 */

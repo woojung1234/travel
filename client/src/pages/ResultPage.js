@@ -12,6 +12,7 @@ function ResultPage() {
   const [analysis, setAnalysis] = useState(null);
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [tooltip, setTooltip] = useState({ visible: false, text: "", x: 0, y: 0 });
 
   // Google 지도 링크 생성
   const generateGoogleMapsLink = (placeName, address) => {
@@ -19,8 +20,29 @@ function ResultPage() {
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
   };
 
-  const calculatePositivePercentage = (rating) => {
-    return Math.min(Math.max((rating / 5) * 100, 0), 100);
+  // 긍정 및 부정 비율 계산
+  const calculateSentimentPercentage = (sentiments) => {
+    const total = sentiments.positive + sentiments.negative;
+    if (total === 0) return { positive: 50, negative: 50 }; // 기본값
+    return {
+      positive: (sentiments.positive / total) * 100,
+      negative: (sentiments.negative / total) * 100,
+    };
+  };
+
+  const handleMouseEnter = (e, sentiments) => {
+    const { positive, negative } = calculateSentimentPercentage(sentiments);
+    const { clientX, clientY } = e;
+    setTooltip({
+      visible: true,
+      text: `긍정: ${positive.toFixed(1)}% | 부정: ${negative.toFixed(1)}%`,
+      x: clientX + 10,
+      y: clientY + 10,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip({ visible: false, text: "", x: 0, y: 0 });
   };
 
   useEffect(() => {
@@ -41,6 +63,7 @@ function ResultPage() {
             advantages: [],
             disadvantages: [],
             usefulInfo: [],
+            sentiments: { positive: 0, negative: 0 },
           });
           setLoading(false);
           return;
@@ -50,14 +73,20 @@ function ResultPage() {
           reviews,
         });
 
-        const { summary, advantages, disadvantages, usefulInfo } =
-            analysisResponse.data;
+        const {
+          summary,
+          advantages,
+          disadvantages,
+          usefulInfo,
+          sentiments,
+        } = analysisResponse.data;
 
         setAnalysis({
           summary,
           advantages,
           disadvantages,
           usefulInfo,
+          sentiments,
         });
       } catch (error) {
         console.error("분석 에러:", error);
@@ -66,6 +95,7 @@ function ResultPage() {
           advantages: [],
           disadvantages: [],
           usefulInfo: [],
+          sentiments: { positive: 0, negative: 0 },
         });
       } finally {
         setLoading(false);
@@ -103,20 +133,26 @@ function ResultPage() {
                         <span>⭐ {details.rating} / 5</span>
                         <span>📋 리뷰 수: {details.user_ratings_total}</span>
                       </div>
-                      <div className="rating-chart">
+                      <div
+                          className="rating-chart"
+                          onMouseEnter={(e) => handleMouseEnter(e, analysis.sentiments)}
+                          onMouseLeave={handleMouseLeave}
+                      >
                         <div className="rating-bar-container">
                           <div
                               className="positive-bar"
                               style={{
-                                width: `${calculatePositivePercentage(details.rating)}%`,
+                                width: `${calculateSentimentPercentage(
+                                    analysis.sentiments
+                                ).positive}%`,
                               }}
                           ></div>
                           <div
                               className="negative-bar"
                               style={{
-                                width: `${
-                                    100 - calculatePositivePercentage(details.rating)
-                                }%`,
+                                width: `${calculateSentimentPercentage(
+                                    analysis.sentiments
+                                ).negative}%`,
                               }}
                           ></div>
                         </div>
@@ -201,8 +237,19 @@ function ResultPage() {
               </a>
             </div>
         )}
+
+        {tooltip.visible && (
+            <div
+                className="tooltip"
+                style={{ top: `${tooltip.y}px`, left: `${tooltip.x}px` }}
+            >
+              {tooltip.text}
+            </div>
+        )}
       </div>
   );
 }
 
 export default ResultPage;
+
+

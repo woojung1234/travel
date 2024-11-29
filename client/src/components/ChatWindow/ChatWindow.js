@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./ChatWindow.css";
 
@@ -8,19 +8,53 @@ function ChatWindow({ placeDetails }) {
   ]);
   const [input, setInput] = useState("");
   const [recommendedQuestions, setRecommendedQuestions] = useState([]);
-  const [isQuestionsVisible, setIsQuestionsVisible] = useState(false); // 추천 질문 버튼 클릭 상태
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
 
-// 추천 질문 가져오기
+  // 추천 질문 가져오기
   const fetchRecommendedQuestions = async () => {
+    if (!placeDetails || !placeDetails.name || !placeDetails.address) {
+      console.error("placeDetails 정보가 부족합니다:", placeDetails);
+      setRecommendedQuestions([
+        "이 장소의 위치는 어디인가요?",
+        "이 장소는 어떤 시설이 있나요?",
+        "이 장소에서 주의할 점은 무엇인가요?",
+      ]); // 기본값 설정
+      return;
+    }
+
+    setLoadingQuestions(true);
     try {
       const response = await axios.post("/api/openai/recommend-questions", {
         placeDetails,
       });
-      setRecommendedQuestions(response.data.questions || []);
+      const questions = response.data.questions || [];
+      if (questions.length === 0) {
+        // 질문이 비어 있으면 기본값 제공
+        setRecommendedQuestions([
+          "이 장소의 위치는 어디인가요?",
+          "이 장소는 어떤 시설이 있나요?",
+          "이 장소에서 주의할 점은 무엇인가요?",
+        ]);
+      } else {
+        setRecommendedQuestions(questions);
+      }
     } catch (error) {
       console.error("추천 질문 에러:", error);
+      setRecommendedQuestions([
+        "추천 질문을 불러오는 데 실패했습니다.",
+        "이 장소에 대한 정보는 어떻게 얻을 수 있나요?",
+        "이 장소의 주변 명소는 무엇인가요?",
+      ]);
+    } finally {
+      setLoadingQuestions(false);
     }
   };
+
+  useEffect(() => {
+    if (placeDetails) {
+      fetchRecommendedQuestions();
+    }
+  }, [placeDetails]);
 
   // 메시지 전송
   const handleSend = async () => {
@@ -39,7 +73,10 @@ function ChatWindow({ placeDetails }) {
       setMessages((msgs) => [...msgs, { sender: "bot", text: botMessage }]);
     } catch (error) {
       console.error("챗봇 에러:", error);
-      setMessages((msgs) => [...msgs, { sender: "bot", text: "응답을 받을 수 없습니다." }]);
+      setMessages((msgs) => [
+        ...msgs,
+        { sender: "bot", text: "응답을 받을 수 없습니다." },
+      ]);
     }
   };
 
@@ -51,19 +88,20 @@ function ChatWindow({ placeDetails }) {
   return (
       <div className="chat-window">
         <h2>챗봇과 대화하기</h2>
-        <button onClick={fetchRecommendedQuestions} className="recommend-button">
-          추천 질문 보기
-        </button>
         <div className="recommend-questions">
-          {recommendedQuestions.map((question, index) => (
-              <button
-                  key={index}
-                  className="question-button"
-                  onClick={() => handleQuestionClick(question)}
-              >
-                {question}
-              </button>
-          ))}
+          {loadingQuestions ? (
+              <p>추천 질문을 불러오는 중입니다...</p>
+          ) : (
+              recommendedQuestions.map((question, index) => (
+                  <div
+                      key={index}
+                      className="question-item"
+                      onClick={() => handleQuestionClick(question)}
+                  >
+                    {question}
+                  </div>
+              ))
+          )}
         </div>
         <div className="messages">
           {messages.map((msg, index) => (
@@ -92,3 +130,5 @@ function ChatWindow({ placeDetails }) {
 }
 
 export default ChatWindow;
+
+
