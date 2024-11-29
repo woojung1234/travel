@@ -1,12 +1,9 @@
-// ResultPage.js
-
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import AnalysisResult from '../components/AnalysisResult/AnalysisResult';
-import ChatWindow from '../components/ChatWindow/ChatWindow';
-import axios from 'axios';
-import { ClipLoader } from 'react-spinners';
-import './ResultPage.css';
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import ChatWindow from "../components/ChatWindow/ChatWindow";
+import axios from "axios";
+import { ClipLoader } from "react-spinners";
+import "./ResultPage.css";
 
 function ResultPage() {
   const location = useLocation();
@@ -20,7 +17,7 @@ function ResultPage() {
     const fetchDetailsAndAnalysis = async () => {
       try {
         // 장소 상세 정보 가져오기
-        const detailsResponse = await axios.get('/api/places/details', {
+        const detailsResponse = await axios.get("/api/places/details", {
           params: { place_id: place.place_id },
         });
 
@@ -32,19 +29,29 @@ function ResultPage() {
 
         // 리뷰가 없을 경우 처리
         if (reviews.length === 0) {
-          setAnalysis('한국어 리뷰가 없습니다.');
+          setAnalysis({
+            summary: "한국어 리뷰가 없습니다.",
+            advantages: [],
+            disadvantages: [],
+          });
           setLoading(false);
           return;
         }
 
         // 리뷰 분석 요청
-        const analysisResponse = await axios.post('/api/openai/analyze', {
+        const analysisResponse = await axios.post("/api/openai/analyze", {
           reviews,
         });
-        setAnalysis(analysisResponse.data.analysis);
+
+        const { summary, advantages, disadvantages } = analysisResponse.data;
+        setAnalysis({ summary, advantages, disadvantages });
       } catch (error) {
-        console.error('분석 에러:', error);
-        setAnalysis('분석 중 오류가 발생했습니다.');
+        console.error("분석 에러:", error);
+        setAnalysis({
+          summary: "분석 중 오류가 발생했습니다.",
+          advantages: [],
+          disadvantages: [],
+        });
       } finally {
         setLoading(false);
       }
@@ -57,7 +64,7 @@ function ResultPage() {
       <div className="result-page">
         {/* 검색창으로 돌아가기 버튼 */}
         <div className="back-button-container">
-          <button className="back-button" onClick={() => navigate('/')}>
+          <button className="back-button" onClick={() => navigate("/")}>
             검색창으로 돌아가기
           </button>
         </div>
@@ -75,7 +82,6 @@ function ResultPage() {
                       <img
                           className="place-photo"
                           src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${details.photos[0]?.photo_reference}&key=${process.env.REACT_APP_GOOGLE_PLACES_API_KEY}`}
-
                           alt={details.name}
                       />
                       <h2>{details.name}</h2>
@@ -86,8 +92,28 @@ function ResultPage() {
                       </div>
                     </div>
                 )}
-                {/* 분석 결과 렌더링 */}
-                <AnalysisResult analysis={analysis} />
+
+                {/* 분석 결과 섹션 */}
+                {analysis && (
+                    <>
+                      <div className="advantages">
+                        <h3>🌞 장점</h3>
+                        <ul>
+                          {analysis.advantages.map((advantage, index) => (
+                              <li key={index}>{advantage}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="disadvantages">
+                        <h3>⚠️ 단점</h3>
+                        <ul>
+                          {analysis.disadvantages.map((disadvantage, index) => (
+                              <li key={index}>{disadvantage}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </>
+                )}
               </div>
           )}
         </div>
