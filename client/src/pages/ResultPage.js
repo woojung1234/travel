@@ -13,6 +13,12 @@ function ResultPage() {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Google 지도 링크 생성
+  const generateGoogleMapsLink = (placeName, address) => {
+    const query = encodeURIComponent(`${placeName} ${address}`);
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  };
+
   const calculatePositivePercentage = (rating) => {
     return Math.min(Math.max((rating / 5) * 100, 0), 100);
   };
@@ -31,7 +37,7 @@ function ResultPage() {
 
         if (reviews.length === 0) {
           setAnalysis({
-            summary: "한국어 리뷰가 없습니다.",
+            summary: ["한국어 리뷰가 없습니다."],
             advantages: [],
             disadvantages: [],
             usefulInfo: [],
@@ -56,7 +62,7 @@ function ResultPage() {
       } catch (error) {
         console.error("분석 에러:", error);
         setAnalysis({
-          summary: "분석 중 오류가 발생했습니다.",
+          summary: ["분석 중 오류가 발생했습니다."],
           advantages: [],
           disadvantages: [],
           usefulInfo: [],
@@ -97,15 +103,12 @@ function ResultPage() {
                         <span>⭐ {details.rating} / 5</span>
                         <span>📋 리뷰 수: {details.user_ratings_total}</span>
                       </div>
-                      {/* 긍정/부정 비율 그래프 */}
                       <div className="rating-chart">
                         <div className="rating-bar-container">
                           <div
                               className="positive-bar"
                               style={{
-                                width: `${calculatePositivePercentage(
-                                    details.rating
-                                )}%`,
+                                width: `${calculatePositivePercentage(details.rating)}%`,
                               }}
                           ></div>
                           <div
@@ -134,7 +137,6 @@ function ResultPage() {
                           ))}
                         </ul>
                       </div>
-                      {/* 장점 */}
                       <div className="advantages">
                         <h3>🌞 장점</h3>
                         <ul>
@@ -151,7 +153,6 @@ function ResultPage() {
                         </ul>
                       </div>
 
-                      {/* 단점 */}
                       <div className="disadvantages">
                         <h3>⚠️ 단점</h3>
                         <ul>
@@ -180,13 +181,28 @@ function ResultPage() {
               </div>
           )}
         </div>
+
         <div className="right-pane">
-          <ChatWindow/>
+          <ChatWindow />
         </div>
+
+        {details && (
+            <div className="google-maps-button-container">
+              <a
+                  href={generateGoogleMapsLink(
+                      details.name,
+                      details.formatted_address
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="google-maps-button"
+              >
+                {details.name}로 이동하기
+              </a>
+            </div>
+        )}
       </div>
   );
 }
 
 export default ResultPage;
-
-

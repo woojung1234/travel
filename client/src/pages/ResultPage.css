@@ -169,3 +169,27 @@
   transform: scale(1.05); /* 확대 효과 */
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
 }
+.google-maps-button-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.google-maps-button {
+  display: inline-block;
+  background: #4caf50;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.google-maps-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
+}
