@@ -3,14 +3,21 @@
     display: flex;
     height: 100vh;
   }
-  
+
   .left-pane,
   .right-pane {
     flex: 1;
     overflow: hidden;
   }
-  
+
   .left-pane {
     border-right: 1px solid #ccc;
   }
-  
+.place-photo {
+  width: 100%;
+  height: auto; /* 비율 유지 */
+  max-height: 400px; /* 최대 높이 제한 */
+  object-fit: cover; /* 사진 비율을 유지하면서 잘림 */
+  border-radius: 10px; /* 모서리를 둥글게 */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+}
