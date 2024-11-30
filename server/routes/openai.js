@@ -62,27 +62,16 @@ ${reviews.join("\n")}
 });
 
 // 추천 질문 생성 API
-router.post('/recommend-questions', async (req, res) => {
-    const { placeDetails } = req.body;
-
-    // placeDetails 유효성 검사
-    if (!placeDetails || !placeDetails.name) {
-        return res.status(400).json({ error: '장소 이름이 누락되었습니다.' });
-    }
+router.post('/get-suggestions', async (req, res) => {
+    const { placeName } = req.body;
 
     try {
         const prompt = `
-"${placeDetails.name}"에 대해 사용자가 궁금해할 만한 5개의 질문을 제공해줘. 장소의 이름과 관련된 질문이어야 하며, 각 질문은 문자열 형태로만 제공하고, JSON 배열로 반환해줘.
-
-예시 응답:
-[
-  "질문 1",
-  "질문 2",
-  "질문 3",
-  "질문 4",
-  "질문 5"
-]
-`;
+  "${placeName}"에 대해 사용자가 궁금해할 만한 5개의 질문을 제공해줘. 각 질문은 문자열 형태로만 제공하고, JSON 배열로 반환해줘.
+  
+  예시:
+  ["질문1", "질문2", "질문3", "질문4", "질문5"]
+  `;
 
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',
@@ -98,16 +87,14 @@ router.post('/recommend-questions', async (req, res) => {
             }
         );
 
-        // OpenAI 응답에서 추천 질문 파싱
         const suggestions = JSON.parse(response.data.choices[0].message.content);
-
-        // 클라이언트에 추천 질문 반환
         res.json({ questions: suggestions });
     } catch (error) {
         console.error('추천 질문 생성 에러:', error.response?.data || error.message);
-        res.status(500).json({ error: '추천 질문 생성에 실패했습니다.' });
+        res.status(500).json({ error: '추천 질문을 생성하는 데 실패했습니다.' });
     }
 });
+
 
 
 // 챗봇 대화 API

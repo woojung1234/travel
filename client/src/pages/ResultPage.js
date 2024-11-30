@@ -219,7 +219,8 @@ function ResultPage() {
         </div>
 
         <div className="right-pane">
-          <ChatWindow />
+          {/* ChatWindow에 details 전달 */}
+          {details && <ChatWindow placeName={details?.name} />}
         </div>
 
         {details && (
@@ -251,5 +252,6 @@ function ResultPage() {
 }
 
 export default ResultPage;
+
 
 
