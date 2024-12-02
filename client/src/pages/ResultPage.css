@@ -206,3 +206,36 @@
   transform: scale(1.05);
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
 }
+
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #1e293b;
+  color: white;
+  flex-direction: column;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-image {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
+}
+
+.loading-content p {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.loading-image {
+  width: 120px; /* 너비 조정 */
+  height: auto; /* 높이를 자동 비율로 */
+  margin-bottom: 20px; /* 텍스트와 간격 추가 */
+  border-radius: 50%; /* 원형 이미지 효과 */
+  object-fit: cover; /* 이미지 크기에 맞추기 */
+}
