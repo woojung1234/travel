@@ -1,5 +1,3 @@
-// SearchBar.js
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -14,30 +12,32 @@ function SearchBar() {
     if (input.trim() === '') return;
 
     try {
-      // 백엔드의 검색 API 호출
-      const response = await axios.get('/api/places/search', {
-        params: { query: input },
-      });
+      // 검색 기록 관리
+      const storedHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+      const updatedHistory = [input, ...storedHistory.filter((item) => item !== input)]; // 중복 제거 및 최신 검색어 우선
+      if (updatedHistory.length > 10) updatedHistory.pop(); // 최대 10개 기록 유지
+      localStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
+
+      // 백엔드 API 호출
+      const response = await axios.get('/api/places/search', { params: { query: input } });
       const place = response.data.results[0];
       navigate('/results', { state: { query: input, place } });
     } catch (error) {
       console.error('검색 에러:', error);
-      // 에러 처리 로직 추가 (예: 사용자에게 에러 메시지 표시)
     }
   };
 
   return (
-    <form className="search-bar" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="여행지, 맛집 등 정보를 입력하세요."
-        onFocus={(e) => (e.target.placeholder = '')}
-        onBlur={(e) => (e.target.placeholder = '여행지, 맛집 등 정보를 입력하세요.')}
-      />
-      <button type="submit">검색</button>
-    </form>
+      <form className="search-bar" onSubmit={handleSubmit}>
+        <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="여행지, 맛집 등 정보를 입력하세요."
+            onFocus={(e) => (e.target.placeholder = '')}
+            onBlur={(e) => (e.target.placeholder = '여행지, 맛집 등 정보를 입력하세요.')}/>
+        <button type="submit">검색</button>
+      </form>
   );
 }
 

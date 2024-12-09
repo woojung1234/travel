@@ -36,7 +36,7 @@
 }
 
 .place-photo {
-  width: 100%;
+  width: 70%;
   max-height: 300px;
   object-fit: cover;
   border-radius: 10px;
@@ -160,26 +160,27 @@
 
 /* 버튼 스타일 */
 .logo-container {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-}
-
-.logo {
-  font-size: 1.5em;
-  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
   cursor: pointer;
-  color: #4caf50; /* 로고 텍스트 색상 예시 */
-  background: none;
-  padding: 10px 20px;
-  border-radius: 30px;
-  text-decoration: none;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.logo:hover {
-  transform: scale(1.05);
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+.logo-image {
+  width: 150px; /* 로고 크기 조정 */
+  height: auto; /* 비율 유지 */
+}
+
+
+
+.place-details {
+  margin-top: 40px; /* 로고와 사진 간격 확보 */
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #1e293b;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .google-maps-button-container {

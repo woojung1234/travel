@@ -149,16 +149,15 @@ function ResultPage() {
 
   return (
       <div className="result-page">
-        <div className="logo-container">
-          <div className="logo" onClick={() => navigate("/")}>
-            ReviewTrip
-          </div>
-        </div>
-
         <div className="left-pane">
           {details && (
               <div className="place-details">
-              <img
+                {/* 로고 */}
+                <div className="logo-container" onClick={() => navigate('/')}>
+                  <img src="/assets/ReviewTrip.png" alt="ReviewTrip" className="logo-image"/>
+                </div>
+
+                <img
                     className="place-photo"
                     src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${details.photos[0]?.photo_reference}&key=${process.env.REACT_APP_GOOGLE_PLACES_API_KEY}`}
                     alt={details.name}
@@ -203,7 +202,7 @@ function ResultPage() {
                 <div className="analysis-summary">
                   <h3>3줄 요약</h3>
                   <ul>
-                    {analysis.summary.map((item, index) => (
+                  {analysis.summary.map((item, index) => (
                         <li key={index}>{item}</li>
                     ))}
                   </ul>
