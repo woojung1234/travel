@@ -1,8 +1,8 @@
 // src/pages/HomePage.js
 import React from 'react';
 import SearchBar from '../components/SearchBar/SearchBar';
-import PopularDestinations from '../components/PopularDestinations/PopularDestinations';
 import './HomePage.css';
+import Slider from '../components/Slider/Slider';
 
 function HomePage() {
   return (
@@ -18,7 +18,7 @@ function HomePage() {
         </span>{' '}
               지금 핫한 여행장소
           </div>
-          <PopularDestinations/>
+          <Slider/>
       </div>
   );
 }
