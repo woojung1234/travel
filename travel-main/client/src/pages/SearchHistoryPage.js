@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './SearchHistoryPage.css';
 
 function SearchHistoryPage() {
     const [history, setHistory] = useState([]);
@@ -21,6 +22,14 @@ function SearchHistoryPage() {
                 params: { query },
             });
             const place = response.data.results[0];
+
+            // 검색 기록 중복 방지 및 저장
+            const newEntry = { query, location: place.formatted_address || '정보 없음' };
+            const updatedHistory = [newEntry, ...history.filter((item) => item.query !== query)];
+            setHistory(updatedHistory);
+            localStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
+
+            // 검색 결과 페이지로 이동
             navigate('/results', { state: { query, place } });
         } catch (error) {
             console.error('검색 에러:', error);
@@ -30,15 +39,21 @@ function SearchHistoryPage() {
     const handleSubmit = (e) => {
         e.preventDefault();
         handleSearch(input);
+        setInput('');
     };
 
     const handleHistoryClick = (query) => {
         handleSearch(query);
     };
 
+    const handleDelete = (query) => {
+        const updatedHistory = history.filter((item) => item.query !== query);
+        setHistory(updatedHistory);
+        localStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
+    };
+
     return (
         <div className="search-history-page">
-            <h1>검색 기록</h1>
             <form className="search-bar" onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -48,20 +63,23 @@ function SearchHistoryPage() {
                 />
                 <button type="submit">검색</button>
             </form>
+            <h1>검색 기록</h1>
             {history.length > 0 ? (
                 <ul className="history-list">
                     {history.map((item, index) => (
-                        <li key={index} onClick={() => handleHistoryClick(item)}>
-                            {item}
+                        <li key={index} className="history-item">
+                            <div onClick={() => handleHistoryClick(item.query)}>
+                                <strong>{item.query}</strong> - <span>{item.location}</span>
+                            </div>
+                            <button className="delete-button" onClick={() => handleDelete(item.query)}>
+                                ✖
+                            </button>
                         </li>
                     ))}
                 </ul>
             ) : (
                 <p>검색 기록이 없습니다.</p>
             )}
-            <button className="clear-button" onClick={() => localStorage.removeItem('searchHistory')}>
-                검색 기록 삭제
-            </button>
         </div>
     );
 }

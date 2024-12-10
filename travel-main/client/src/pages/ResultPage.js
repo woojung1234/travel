@@ -153,7 +153,7 @@ function ResultPage() {
           {details && (
               <div className="place-details">
                 {/* 로고 */}
-                <div className="logo-container" onClick={() => navigate('/')}>
+                <div className="logo-container" onClick={() => navigate('/history')}>
                   <img src="/assets/ReviewTrip.png" alt="ReviewTrip" className="logo-image"/>
                 </div>
 
