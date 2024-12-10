@@ -7,6 +7,8 @@ function SearchBar() {
   const [input, setInput] = useState('');
   const navigate = useNavigate();
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (input.trim() === '') return;
